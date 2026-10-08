@@ -50,7 +50,6 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
     }
 
     void startRock() {
-        auto* f = m_fields;
         if (m_fields->rockMode || !m_player1)
             return;
 
