@@ -53,11 +53,9 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
         if (f.turned || !m_player1)
             return;
 
-        auto path = (Mod::get()->getResourcesDir() / "shchebenka.wav").string();
-        FMODAudioEngine::sharedEngine()->playEffect(path);
+        FMODAudioEngine::sharedEngine()->playEffect("gameSound_01.ogg");
 
-        auto spritePath = (Mod::get()->getResourcesDir() / "shchebenka.png").string();
-        f.rock = CCSprite::create(spritePath.c_str());
+        f.rock = CCSprite::createWithSpriteFrameName("GJ_square01.png");
 
         if (!f.rock)
             return;
