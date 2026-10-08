@@ -24,43 +24,41 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
         if (!m_player1 || m_player1->m_isDead || m_hasCompletedLevel)
             return;
 
-        auto* f = m_fields;
-
-        if (!f.initialized) {
-            f.initialized = true;
-            f.nextEvent = randomTime(10.f, 35.f);
+        if (!m_fields->initialized) {
+            m_fields->initialized = true;
+            m_fields->nextEvent = randomTime(10.f, 35.f);
         }
 
-        if (f.rockMode) {
-            f.rockTime -= dt;
+        if (m_fields->rockMode) {
+            m_fields->rockTime -= dt;
 
             if (m_player1->m_iconSprite) {
                 m_player1->m_iconSprite->setColor({105, 105, 105});
                 m_player1->m_iconSprite->setOpacity(255);
             }
 
-            if (f.rockTime <= 0.f) {
+            if (m_fields->rockTime <= 0.f) {
                 stopRock();
-                f.nextEvent = randomTime(12.f, 40.f);
+                m_fields->nextEvent = randomTime(12.f, 40.f);
             }
             return;
         }
 
-        f.nextEvent -= dt;
-        if (f.nextEvent <= 0.f)
+        m_fields->nextEvent -= dt;
+        if (m_fields->nextEvent <= 0.f)
             startRock();
     }
 
     void startRock() {
         auto* f = m_fields;
-        if (f.rockMode || !m_player1)
+        if (m_fields->rockMode || !m_player1)
             return;
 
         // Temporary built-in sound until the real voice line is supplied.
         FMODAudioEngine::sharedEngine()->playEffect("gameSound_01.ogg");
 
-        f.rockMode = true;
-        f.rockTime = randomTime(3.f, 7.f);
+        m_fields->rockMode = true;
+        m_fields->rockTime = randomTime(3.f, 7.f);
 
         if (m_player1->m_iconSprite) {
             m_player1->m_iconSprite->setColor({105, 105, 105});
@@ -69,15 +67,13 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
     }
 
     void stopRock() {
-        auto* f = m_fields;
-
         if (m_player1 && m_player1->m_iconSprite) {
             m_player1->m_iconSprite->setColor({255, 255, 255});
             m_player1->m_iconSprite->setOpacity(255);
         }
 
-        f.rockMode = false;
-        f.rockTime = 0.f;
+        m_fields->rockMode = false;
+        m_fields->rockTime = 0.f;
     }
 
     void onExit() {
