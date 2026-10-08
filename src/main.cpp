@@ -24,7 +24,7 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
         if (!m_player1 || m_player1->m_isDead || m_hasCompletedLevel)
             return;
 
-        auto& f = *m_fields;
+        auto* f = m_fields;
 
         if (!f.initialized) {
             f.initialized = true;
@@ -52,7 +52,7 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
     }
 
     void startRock() {
-        auto& f = *m_fields;
+        auto* f = m_fields;
         if (f.rockMode || !m_player1)
             return;
 
@@ -69,7 +69,7 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
     }
 
     void stopRock() {
-        auto& f = *m_fields;
+        auto* f = m_fields;
 
         if (m_player1 && m_player1->m_iconSprite) {
             m_player1->m_iconSprite->setColor({255, 255, 255});
