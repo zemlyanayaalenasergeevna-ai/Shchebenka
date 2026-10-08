@@ -1,0 +1,14 @@
+{
+  "geode": "5.10.1",
+  "gd": {
+    "android": "2.2081",
+    "win": "2.2081",
+    "mac": "2.2081",
+    "ios": "2.2081"
+  },
+  "id": "alena.shchebenka",
+  "name": "Shchebenka",
+  "version": "v0.1.0",
+  "developer": "Alena",
+  "description": "Randomly plays the Shchebenka voice line and turns the player into a rock."
+}
