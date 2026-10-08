@@ -1,18 +1,22 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
-#include <Geode/utils/cocos.hpp>
 #include <random>
 
 using namespace geode::prelude;
 
 class $modify(ShchebenkaPlayLayer, PlayLayer) {
     struct Fields {
-        float nextEvent = 12.f;
+        float nextEvent = 15.f;
         float rockTime = 0.f;
-        bool turned = false;
-        CCSprite* rock = nullptr;
+        bool rockMode = false;
         bool initialized = false;
     };
+
+    float randomTime(float min, float max) {
+        static std::mt19937 rng(std::random_device{}());
+        std::uniform_real_distribution<float> dist(min, max);
+        return dist(rng);
+    }
 
     void update(float dt) {
         PlayLayer::update(dt);
@@ -24,76 +28,60 @@ class $modify(ShchebenkaPlayLayer, PlayLayer) {
 
         if (!f.initialized) {
             f.initialized = true;
-            f.nextEvent = randomRange(10.f, 35.f);
+            f.nextEvent = randomTime(10.f, 35.f);
         }
 
-        if (f.turned) {
+        if (f.rockMode) {
             f.rockTime -= dt;
 
-            if (f.rock) {
-                f.rock->setPosition(m_player1->getPosition());
-                f.rock->setRotation(m_player1->getRotation());
+            if (m_player1->m_iconSprite) {
+                m_player1->m_iconSprite->setColor({105, 105, 105});
+                m_player1->m_iconSprite->setOpacity(255);
             }
 
             if (f.rockTime <= 0.f) {
-                unRock();
-                f.nextEvent = randomRange(12.f, 40.f);
+                stopRock();
+                f.nextEvent = randomTime(12.f, 40.f);
             }
             return;
         }
 
         f.nextEvent -= dt;
-        if (f.nextEvent <= 0.f) {
-            becomeRock();
-        }
+        if (f.nextEvent <= 0.f)
+            startRock();
     }
 
-    void becomeRock() {
+    void startRock() {
         auto& f = *m_fields;
-        if (f.turned || !m_player1)
+        if (f.rockMode || !m_player1)
             return;
 
+        // Temporary built-in sound until the real voice line is supplied.
         FMODAudioEngine::sharedEngine()->playEffect("gameSound_01.ogg");
 
-        f.rock = CCSprite::createWithSpriteFrameName("GJ_square01.png");
+        f.rockMode = true;
+        f.rockTime = randomTime(3.f, 7.f);
 
-        if (!f.rock)
-            return;
-
-        f.rock->setScale(0.72f);
-        f.rock->setPosition(m_player1->getPosition());
-        f.rock->setRotation(m_player1->getRotation());
-        f.rock->setOpacity(255);
-        this->addChild(f.rock, 10000);
-
-        m_player1->setVisible(false);
-        f.turned = true;
-        f.rockTime = randomRange(3.f, 7.f);
+        if (m_player1->m_iconSprite) {
+            m_player1->m_iconSprite->setColor({105, 105, 105});
+            m_player1->m_iconSprite->setOpacity(255);
+        }
     }
 
-    void unRock() {
+    void stopRock() {
         auto& f = *m_fields;
 
-        if (m_player1)
-            m_player1->setVisible(true);
-
-        if (f.rock) {
-            f.rock->removeFromParentAndCleanup(true);
-            f.rock = nullptr;
+        if (m_player1 && m_player1->m_iconSprite) {
+            m_player1->m_iconSprite->setColor({255, 255, 255});
+            m_player1->m_iconSprite->setOpacity(255);
         }
 
-        f.turned = false;
+        f.rockMode = false;
         f.rockTime = 0.f;
     }
 
-    float randomRange(float low, float high) {
-        static std::mt19937 rng(std::random_device{}());
-        std::uniform_real_distribution<float> dist(low, high);
-        return dist(rng);
-    }
-
     void onExit() {
-        unRock();
+        stopRock();
         PlayLayer::onExit();
     }
 };
